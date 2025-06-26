@@ -26,24 +26,32 @@ function FirebaseOTPLogin() {
 
 
   const handleSendOTP = () => {
-    const phone = `+91${mobile}`;
-    const appVerifier = window.recaptchaVerifier;
+  if (!window.recaptchaVerifier) {
+    window.recaptchaVerifier = new RecaptchaVerifier(
+      'recaptcha-container',
+      { size: 'invisible' },
+      auth
+    );
+  }
 
-     console.log("Sending to:", phone);
+  const appVerifier = window.recaptchaVerifier;
+  const phone = `+91${mobile}`;
+
+  console.log("Sending to:", phone);
   console.log("Using auth:", auth);
   console.log("Using verifier:", appVerifier);
 
-    signInWithPhoneNumber(auth, phone, appVerifier)
-      .then((confirmationResult) => {
-        setConfirmation(confirmationResult);
-        setMessage('✅ OTP sent!');
-      })
-     .catch((error) => {
-  console.error("OTP Error:", error);
-  setMessage(`❌ ${error.code}: ${error.message}`);
-});
+  signInWithPhoneNumber(auth, phone, appVerifier)
+    .then((confirmationResult) => {
+      setConfirmation(confirmationResult);
+      setMessage("✅ OTP sent!");
+    })
+    .catch((error) => {
+      console.error("OTP Error:", error);
+      setMessage(`❌ ${error.code}: ${error.message}`);
+    });
+};
 
-  };
 
   const handleVerifyOTP = () => {
     if (!confirmation) return setMessage('Please send OTP first');
