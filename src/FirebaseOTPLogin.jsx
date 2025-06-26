@@ -19,10 +19,11 @@ function FirebaseOTPLogin() {
         setConfirmation(confirmationResult);
         setMessage('✅ OTP sent!');
       })
-      .catch((error) => {
-        console.error(error);
-        setMessage('❌ Error sending OTP');
-      });
+     .catch((error) => {
+  console.error("OTP Error:", error);
+  setMessage(`❌ ${error.code}: ${error.message}`);
+});
+
   };
 
   const handleVerifyOTP = () => {
