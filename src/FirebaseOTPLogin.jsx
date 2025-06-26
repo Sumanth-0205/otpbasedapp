@@ -27,30 +27,40 @@ function FirebaseOTPLogin() {
 
   const handleSendOTP = () => {
   if (!window.recaptchaVerifier) {
-    window.recaptchaVerifier = new RecaptchaVerifier(
-      'recaptcha-container',
-      { size: 'invisible' },
-      auth
-    );
+    if (!auth) {
+      console.error("❌ Firebase auth not initialized");
+      setMessage("❌ Firebase Auth not ready.");
+      return;
+    }
+
+    try {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        "recaptcha-container",
+        { size: "invisible" },
+        auth
+      );
+      window.recaptchaVerifier.render();
+    } catch (error) {
+      console.error("reCAPTCHA setup error:", error);
+      setMessage("❌ reCAPTCHA setup failed.");
+      return;
+    }
   }
 
-  const appVerifier = window.recaptchaVerifier;
   const phone = `+91${mobile}`;
-
-  console.log("Sending to:", phone);
-  console.log("Using auth:", auth);
-  console.log("Using verifier:", appVerifier);
+  const appVerifier = window.recaptchaVerifier;
 
   signInWithPhoneNumber(auth, phone, appVerifier)
-    .then((confirmationResult) => {
-      setConfirmation(confirmationResult);
+    .then((confirmation) => {
+      setConfirmation(confirmation);
       setMessage("✅ OTP sent!");
     })
-    .catch((error) => {
-      console.error("OTP Error:", error);
-      setMessage(`❌ ${error.code}: ${error.message}`);
+    .catch((err) => {
+      console.error("OTP Error:", err);
+      setMessage(`❌ ${err.code}: ${err.message}`);
     });
 };
+
 
 
   const handleVerifyOTP = () => {
