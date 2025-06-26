@@ -8,11 +8,30 @@ function FirebaseOTPLogin() {
   const [confirmation, setConfirmation] = useState(null);
   const [message, setMessage] = useState('');
 
-  
+  useEffect(() => {
+  if (!window.recaptchaVerifier) {
+    try {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        'recaptcha-container',
+        { size: 'invisible' },
+        auth
+      );
+      window.recaptchaVerifier.render();
+    } catch (error) {
+      console.error("reCAPTCHA init failed:", error);
+      setMessage("❌ reCAPTCHA setup failed.");
+    }
+  }
+}, []);
+
 
   const handleSendOTP = () => {
     const phone = `+91${mobile}`;
     const appVerifier = window.recaptchaVerifier;
+
+     console.log("Sending to:", phone);
+  console.log("Using auth:", auth);
+  console.log("Using verifier:", appVerifier);
 
     signInWithPhoneNumber(auth, phone, appVerifier)
       .then((confirmationResult) => {
